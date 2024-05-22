@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu>
+    <snacks>
+        <item>
+            <name>Siomai Rice</name>
+            <price>₱25.00</price>
+        </item>
+        <item>
+            <name>Pate</name>
+            <price>₱20.00</price>
+        </item>
+        <item>
+            <name>FriedChicken</name>
+            <price>₱20.00</price>
+        </item>
+        <item>
+            <name>Hotdog</name>
+            <price>₱10.00</price>
+        </item>
+        <item>
+            <name>Boiled Egg</name>
+            <price>₱15.00</price>
+        </item>
+        <item>
+            <name>Longganisa</name>
+            <price>₱10.00</price>
+        </item>
+        <item>
+            <name>Lumpia</name>
+            <price>₱10.00</price>
+        </item>
+        <item>
+    	    <name>PlainRice</name>
+            <price>₱10.00</price>
+        </item>
+        <item>
+            <name>FriedRice</name>
+            <price>₱10.00</price>
+        </item>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            

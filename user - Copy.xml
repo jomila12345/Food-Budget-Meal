@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<users xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="users.xsd">
+    <user>
+        <id>1</id>
+        <firstName>Aaron</firstName>
+        <lastName>Mabutol</lastName>
+        <email>aaronmabutol00@gmail.com</email>
+        <password>123456789</password>
+    </user>
+    

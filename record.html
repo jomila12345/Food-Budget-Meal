@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Records</title>
+<style>
+    body {
+        font-family: "Comic Sans MS", cursive;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+    }
+    h1 {
+        color: saddlebrown;
+        text-align: center;
+        background-color: lightgoldenrodyellow;
+        padding: 10px;
+        margin: 0;
+    }
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    table, th, td {
+        border: 1px solid #ddd;
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+    }
+    th {
+        background-color: lightgoldenrodyellow;
+        color: saddlebrown;
+    }
+</style>
+</head>
+<body>
+    <header>
+        <h1>Order Records</h1>
+    </header>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Order Items</th>
+                    <th>Payment Method</th>
+                </tr>
+            </thead>
+            <tbody id="orderRecordsTableBody">
+                <!-- Order records will be populated here -->
+            </tbody>
+        </table>
+        <a href="ordering.html">Back to Ordering</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableBody = document.getElementById('orderRecordsTableBody');
+
+            // Retrieve all orders from localStorage
+            const orderRecords = JSON.parse(localStorage.getItem('orderWithPaymentAndUserRecords')) || [];
+
+            // Populate the table with order records
+            orderRecords.forEach(record => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${record.userInfo.firstName}</td>
+                    <td>${record.userInfo.lastName}</td>
+                    <td>${record.order.map(item => item.name + ' (₱' + item.price + ')').join(', ')}</td>
+                    <td>${record.paymentMethod}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        });
+    </script>
+</body>
+</html>

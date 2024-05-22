@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saved Order</title>
+<style>
+    body {
+        font-family: "Comic Sans MS", cursive;
+        margin: 0;
+        padding: 0;
+        background-image: url('design.png'); 
+        background-size: cover; 
+        background-position: center; 
+    }
+    h1, h2 {
+        color: saddlebrown;
+        text-align: center;
+        background-color: lightgoldenrodyellow;
+        padding: 10px;
+        margin: 0;
+    }
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 0 20px;
+        background-color: white;
+        opacity: 0.9;
+        border-radius: 10px;
+        padding-bottom: 20px;
+    }
+    .order-list {
+        margin-top: 20px;
+    }
+    .order-item {
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .order-item button {
+        background-color: #f00;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+    .total {
+        margin-top: 20px;
+        font-weight: bold;
+    }
+    button[type="submit"], button[type="button"] {
+        width: 100%;
+        padding: 10px;
+        background-color: saddlebrown;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    a:hover {
+        background-color: lightgoldenrodyellow;
+        color: darkred;
+    }
+    .payment-method {
+        margin-top: 20px;
+    }
+    .payment-method label {
+        font-weight: bold;
+        margin-right: 10px;
+    }
+    .payment-method select {
+        padding: 5px;
+    }
+</style>
+</head>
+<body>
+    <header>
+        <h1>Saved Order</h1>
+    </header>
+    <div class="container">
+        <h2>Your Saved Order</h2>
+        <div class="order-list">
+            <!-- Order list will be dynamically populated -->
+        </div>
+        <div class="total">
+            Total: P<span id="total">0.00</span>
+        </div>
+        <div class="payment-method">
+            <label for="paymentMethod">Choose Payment Method:</label>
+            <select id="paymentMethod">
+                <option value="(COD) Cash on delivery">(COD) Cash on delivery</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="GCash">GCash</option>
+            </select>
+        </div>
+        <button type="button" id="saveOrderButton">Save</button>
+        <a href="ordering.html">Back to Ordering</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderList = document.querySelector('.order-list');
+            const totalPriceDisplay = document.getElementById('total');
+            let totalPrice = 0;
+
+            // Load saved order from localStorage
+            const savedOrder = JSON.parse(localStorage.getItem('savedOrder')) || [];
+            savedOrder.forEach(item => {
+                addItemToOrderList(item.name, parseFloat(item.price));
+                totalPrice += parseFloat(item.price);
+            });
+            totalPriceDisplay.textContent = totalPrice.toFixed(2);
+
+            function addItemToOrderList(menuItem, price) {
+                const orderItem = document.createElement('div');
+                orderItem.classList.add('order-item');
+                orderItem.innerHTML = `
+                    <span>${menuItem}</span>
+                    <span>₱${price.toFixed(2)}</span>
+                    <button class="remove-from-order">Delete</button>
+                `;
+                orderList.appendChild(orderItem);
+            }
+
+            // Add event listener for removing items from the order
+            orderList.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-from-order')) {
+                    const menuItem = e.target.parentNode.querySelector('span:first-child').innerText;
+                    const price = parseFloat(e.target.parentNode.querySelector('span:nth-child(2)').innerText.replace('₱', ''));
+                    totalPrice -= price;
+                    totalPriceDisplay.textContent = totalPrice.toFixed(2);
+
+                    // Remove the item from the savedOrder array and update localStorage
+                    const updatedOrder = savedOrder.filter(item => item.name !== menuItem);
+                    localStorage.setItem('savedOrder', JSON.stringify(updatedOrder));
+
+                    // Remove the item from the DOM
+                    e.target.parentNode.remove();
+                }
+            });
+
+            function createXml(order, paymentMethod, userInfo) {
+                let xml = `<order>`;
+                xml += `<paymentMethod>${paymentMethod}</paymentMethod>`;
+                xml += `<userInfo>`;
+                xml += `<firstName>${userInfo.firstName}</firstName>`;
+                xml += `<lastName>${userInfo.lastName}</lastName>`;
+                xml += `</userInfo>`;
+                xml += `<items>`;
+                order.forEach(item => {
+                    xml += `<item>`;
+                    xml += `<name>${item.name}</name>`;
+                    xml += `<price>${item.price}</price>`;
+                    xml += `</item>`;
+                });
+                xml += `</items>`;
+                xml += `</order>`;
+                return xml;
+            }
+
+            // Save the order with the selected payment method and user information
+            document.getElementById('saveOrderButton').addEventListener('click', function() {
+                const paymentMethod = document.getElementById('paymentMethod').value;
+
+                // Retrieve user information from localStorage
+                const userInfoXml = localStorage.getItem('userInfoXml');
+                if (!userInfoXml) {
+                    alert('User information not found. Please register.');
+                    return;
+                }
+
+                // Parse user information XML
+                const parser = new DOMParser();
+                const userInfoDoc = parser.parseFromString(userInfoXml, 'text/xml');
+                const userInfo = {
+                    firstName: userInfoDoc.getElementsByTagName('firstName')[0].textContent,
+                    lastName: userInfoDoc.getElementsByTagName('lastName')[0].textContent
+                };
+
+                // Create XML from order, payment method, and user information
+                const orderXml = createXml(savedOrder, paymentMethod, userInfo);
+
+                // Retrieve existing records from localStorage
+                const orderRecords = JSON.parse(localStorage.getItem('displayDataFromLocalStorageXml')) || [];
+
+                // Append the new order to the records
+                orderRecords.push(orderXml);
+
+                // Store the updated records back to localStorage
+                localStorage.setItem('displayDataFromLocalStorageXml', JSON.stringify(orderRecords));
+
+                // Display success message
+                alert('Order saved successfully with payment method: ' + paymentMethod);
+                window.location.href = 'displayDataFromLocalStorage.html';
+            });
+        });
+    </script>
+</body>
+</html>

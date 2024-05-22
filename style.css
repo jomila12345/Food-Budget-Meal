@@ -1,0 +1,52 @@
+body {
+    font-family: "Comic Sans MS", cursive;
+    text-align: center;
+    color: saddlebrown;
+    background-image: url('BUDGET MEAL.png'); 
+    background-size: cover; 
+    background-position: center; 
+    position: relative; 
+    min-height: 100vh; 
+}
+
+h1 { 
+    bottom: 0; 
+    width: 100%; 
+}
+.top-heading {
+    position: absolute;
+    top: 0;
+  }
+
+
+label {
+    color: saddlebrown; 
+}
+button[type="submit"] {
+    font-family: "Comic Sans MS", cursive;
+    color: saddlebrown; 
+}
+button.goToPage {
+    font-family: "Comic Sans MS", cursive;
+    color: saddlebrown; 
+}
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+.form-container input {
+    width: 150px; 
+    margin: 5px; 
+}
+.form-container .input-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.warning {
+    color: red;
+    font-size: 14px;
+}

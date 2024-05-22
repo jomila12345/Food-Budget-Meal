@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Saved Orders</title>
+    <style>
+        body {
+            font-family: "Comic Sans MS", cursive;
+            margin: 0;
+            padding: 0;
+            background-image: url('design.png');
+            background-size: cover;
+            background-position: center;
+        }
+        h1, h2 {
+            color: saddlebrown;
+            text-align: center;
+            background-color: lightgoldenrodyellow;
+            padding: 10px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+            background-color: white;
+            opacity: 0.9;
+            border-radius: 10px;
+            padding-bottom: 20px;
+        }
+        .search-bar {
+            width: 100%;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border: 1px solid saddlebrown;
+        }
+        .order-record {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid saddlebrown;
+            border-radius: 5px;
+            background-color: lightgoldenrodyellow;
+        }
+        .order-list {
+            margin-top: 10px;
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .back-link {
+            display: block;
+            margin: 20px auto;
+            width: fit-content;
+            padding: 10px;
+            background-color: saddlebrown;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .back-link:hover {
+            background-color: lightgoldenrodyellow;
+            color: darkred;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Display Saved Orders</h1>
+    </header>
+    <div class="container">
+        <input type="text" id="searchBar" class="search-bar" placeholder="Search by user name...">
+        <div id="orderRecordsContainer">
+            <!-- Order records will be dynamically populated -->
+        </div>
+    </div>
+    <a href="ordering.html" class="back-link">Back to Ordering</a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderRecordsContainer = document.getElementById('orderRecordsContainer');
+            const searchBar = document.getElementById('searchBar');
+
+            // Retrieve order records from localStorage
+            const orderRecordsXml = JSON.parse(localStorage.getItem('displayDataFromLocalStorageXml')) || [];
+
+            function displayOrders(filter = '') {
+                orderRecordsContainer.innerHTML = ''; // Clear previous content
+                orderRecordsXml.forEach((orderXml, index) => {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(orderXml, 'text/xml');
+                    const firstName = xmlDoc.getElementsByTagName('firstName')[0].textContent;
+                    const lastName = xmlDoc.getElementsByTagName('lastName')[0].textContent;
+
+                    const fullName = `${firstName} ${lastName}`.toLowerCase();
+                    if (fullName.includes(filter.toLowerCase())) {
+                        const orderRecordDiv = document.createElement('div');
+                        orderRecordDiv.classList.add('order-record');
+                        orderRecordDiv.innerHTML = `
+                            <h2>Order #${index + 1}</h2>
+                            <div class="user-info">User: ${firstName} ${lastName}</div>
+                            <div class="payment-method">Payment Method: ${xmlDoc.getElementsByTagName('paymentMethod')[0].textContent}</div>
+                        `;
+                        
+                        const orderListDiv = document.createElement('div');
+                        orderListDiv.classList.add('order-list');
+
+                        const items = xmlDoc.getElementsByTagName('item');
+                        for (let i = 0; i < items.length; i++) {
+                            const item = items[i];
+                            const name = item.getElementsByTagName('name')[0].textContent;
+                            const price = item.getElementsByTagName('price')[0].textContent;
+
+                            const orderItemDiv = document.createElement('div');
+                            orderItemDiv.classList.add('order-item');
+                            orderItemDiv.innerHTML = `
+                                <span>${name}</span>
+                                <span>₱${parseFloat(price).toFixed(2)}</span>
+                            `;
+                            orderListDiv.appendChild(orderItemDiv);
+                        }
+
+                        orderRecordDiv.appendChild(orderListDiv);
+                        orderRecordsContainer.appendChild(orderRecordDiv);
+                    }
+                });
+            }
+
+            // Display orders initially
+            displayOrders();
+
+            // Add event listener to search bar
+            searchBar.addEventListener('input', function(event) {
+                const filter = event.target.value;
+                displayOrders(filter);
+            });
+        });
+    </script>
+</body>
+</html>

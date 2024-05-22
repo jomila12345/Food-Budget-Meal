@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ordering Page</title>
+<style>
+    body {
+        font-family: "Comic Sans MS", cursive;
+        margin: 0;
+        padding: 0;
+    }
+    h2 {
+        color: saddlebrown;
+    }
+    header {
+        background-color: lightgoldenrodyellow;
+        color: saddlebrown;
+        padding: 10px 0;
+        text-align: center;
+    }
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+    .menu-item {
+        border-bottom: 1px solid #ccc;
+        padding: 10px 0;
+        display: grid;
+        grid-template-columns: auto 1fr auto auto;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .menu-item:last-child {
+        border-bottom: none;
+    }
+    .menu-item button {
+        background-color: whitesmoke;
+        color: saddlebrown;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+    .order-list {
+        margin-top: 20px;
+    }
+    .order-item {
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .order-item button {
+        background-color: #f00;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+    .total {
+        margin-top: 20px;
+        font-weight: bold;
+    }
+    .order-placed {
+        text-align: center;
+        font-weight: bold;
+        font-size: 20px;
+        color: green;
+    }
+    button[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        background-color: saddlebrown;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    img {
+        width: 150px;
+        height: 100px;
+    }
+    button:hover {
+        color: red;
+    }
+</style>
+</head>
+<body>
+    <header>
+        <h1>Order Now</h1>
+    </header>
+    <div class="container">
+        <h2>Menu</h2>
+        <div class="menu">
+            <div class="menu-item">
+                <span>Siomai rice</span>
+                <span>₱25.00</span>
+                <button class="add-to-order">Add</button>
+                <img src="siomai rice.png" alt="Siomai Rice">
+            </div>
+            <div class="menu-item">
+                <span>Pater</span>
+                <span>₱20.00</span>
+                <button class="add-to-order">Add</button>
+                <img src="pater.jpg" alt="Pater">
+            </div>
+            <div class="menu-item">
+                <span>Fried Chicken</span>
+                <span>₱20.00</span>
+                <button class="add-to-order">Add</button>
+                <img src="Fried Chicken.png" alt="Fried Chicken">
+            </div>
+            <div class="menu-item">
+                <span>Hotdog</span>
+                <span>₱10.00</span>
+                <button class="add-to-order">Add</button>
+                <img src="hotdog.jpg" alt="Hotdog">
+            </div>
+            <div class="menu-item">
+                <span>Boiled Egg</span>
+                <span>₱15.00</span>
+                <button class="add-to-order">Add</button>
+                <img src="BoiledEgg.JFIF" alt="Boiled Egg">
+            </div>
+            <div class="menu-item">
+                <span>Longganisa</span>
+                <span>₱10.00</span>
+                <button class="add-to-order">Add</button>
+                <img src="longanisa.jpg" alt="Longganisa">
+            </div>
+            <div class="menu-item">
+                <span>Lumpia</span>
+                <span>₱5.00</span>
+                <button class="add-to-order">Add</button>
+                <img src="lumpia.jpg" alt="Lumpia">
+            </div>
+            <div class="menu-item">
+                <span>Fried Rice</span>
+                <span>₱10.00</span>
+                <button class="add-to-order">Add</button>
+                <img src="FriedRice.JPG" alt="Fried Rice">
+            </div>
+            <div class="menu-item">
+                <span>Plain Rice</span>
+                <span>₱10.00</span>
+                <button class="add-to-order">Add</button>
+                <img src="plain rice.jpg" alt="Plain Rice">
+            </div>
+        </div>
+        <h2>Your Order</h2>
+        <div class="order-list">
+        </div>
+        <div class="total">
+            Total: P<span id="total">0.00</span>
+        </div>
+        <div id="order-placed" class="order-placed" style="display: none;">Order Placed!</div>
+        <button type="submit">Submit</button>
+        <a href="saved_order.html">View Saved Order</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuItems = document.querySelectorAll('.add-to-order');
+            const orderList = document.querySelector('.order-list');
+            const totalPriceDisplay = document.getElementById('total');
+            const orderPlacedMessage = document.getElementById('order-placed');
+            let totalPrice = 0;
+            let currentOrder = [];
+
+            // Load saved order from localStorage if it exists
+            const savedOrder = JSON.parse(localStorage.getItem('savedOrder')) || [];
+            savedOrder.forEach(item => {
+                addItemToOrderList(item.name, parseFloat(item.price));
+                totalPrice += parseFloat(item.price);
+            });
+            totalPriceDisplay.textContent = totalPrice.toFixed(2);
+            currentOrder = savedOrder;
+
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const menuItem = this.parentNode.querySelector('span:first-child').innerText;
+                    const price = parseFloat(this.parentNode.querySelector('span:nth-child(2)').innerText.replace('₱', ''));
+                    addItemToOrderList(menuItem, price);
+                    totalPrice += price;
+                    totalPriceDisplay.textContent = totalPrice.toFixed(2);
+
+                    currentOrder.push({ name: menuItem, price: price.toFixed(2) });
+                });
+            });
+
+            function addItemToOrderList(menuItem, price) {
+                const orderItem = document.createElement('div');
+                orderItem.classList.add('order-item');
+                orderItem.innerHTML = `
+                    <span>${menuItem}</span>
+                    <span>₱${price.toFixed(2)}</span>
+                    <button class="remove-from-order">Remove</button>
+                `;
+                orderList.appendChild(orderItem);
+            }
+
+            orderList.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-from-order')) {
+                    const menuItem = e.target.parentNode.querySelector('span:first-child').innerText;
+                    const price = parseFloat(e.target.parentNode.querySelector('span:nth-child(2)').innerText.replace('₱', ''));
+                    totalPrice -= price;
+                    totalPriceDisplay.textContent = totalPrice.toFixed(2);
+
+                    currentOrder = currentOrder.filter(item => item.name !== menuItem);
+                    e.target.parentNode.remove();
+                }
+            });
+
+            document.querySelector('button[type="submit"]').addEventListener('click', function() {
+                if (currentOrder.length === 0) {
+                    alert('No items in the order. Add items first.');
+                    return;
+                }
+                localStorage.setItem('savedOrder', JSON.stringify(currentOrder));
+                orderPlacedMessage.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
